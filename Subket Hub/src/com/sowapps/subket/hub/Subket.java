@@ -1,4 +1,4 @@
-package subket.hub;
+package com.sowapps.subket.hub;
 
 import java.io.InputStream;
 import java.net.ServerSocket;

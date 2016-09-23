@@ -1,4 +1,4 @@
-package subket.demo;
+package com.sowapps.subket.demo;
 
 import java.io.Serializable;
 

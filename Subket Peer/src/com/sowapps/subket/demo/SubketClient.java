@@ -1,6 +1,6 @@
-package subket.demo;
+package com.sowapps.subket.demo;
 
-import subket.pair.SubketPair;
+import com.sowapps.subket.pair.SubketPair;
 
 public class SubketClient {
 

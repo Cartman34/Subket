@@ -1,4 +1,4 @@
-package subket.hub;
+package com.sowapps.subket.hub;
 
 import java.net.Socket;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ public class SubketApplication {
 		}
 		return true;
 	}
+	
 	public void connect(Socket connecting, boolean isServer) throws Exception {
 		if( connecting.isClosed() || !testSocket(connecting) ) {
 			throw new Exception("Connecting is closed");
@@ -60,6 +61,7 @@ public class SubketApplication {
 		System.out.println("[SubketApp] Add to waiting "+connectingStr+"s");
 		waitingConnecting.add(connecting);
 	}
+	
 	public void connectClient(Socket client) throws Exception {
 		connect(client, false);
 //		if( client.isClosed() || !testSocket(client) ) {

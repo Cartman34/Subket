@@ -1,4 +1,4 @@
-package subket.pair;
+package com.sowapps.subket.pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

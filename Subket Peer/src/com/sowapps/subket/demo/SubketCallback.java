@@ -1,6 +1,6 @@
-package subket.demo;
+package com.sowapps.subket.demo;
 
-import subket.pair.SubketResponse;
+import com.sowapps.subket.pair.SubketResponse;
 
 public class SubketCallback extends SubketResponse {
 

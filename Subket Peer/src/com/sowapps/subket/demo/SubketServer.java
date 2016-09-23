@@ -1,8 +1,8 @@
-package subket.demo;
+package com.sowapps.subket.demo;
 
 import java.util.Scanner;
 
-import subket.pair.SubketPair;
+import com.sowapps.subket.pair.SubketPair;
 
 public class SubketServer {
 

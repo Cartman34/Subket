@@ -1,7 +1,7 @@
-package subket.demo;
+package com.sowapps.subket.demo;
 
-import subket.pair.SubketPair;
-import subket.pair.SubketResponse;
+import com.sowapps.subket.pair.SubketPair;
+import com.sowapps.subket.pair.SubketResponse;
 
 // COULD NOT WORK DUE TO THE NON-GENERICITY OF run()
 public class SubketObjectServer extends SubketPair {
