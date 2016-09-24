@@ -9,15 +9,21 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-// TODO: If server and connected to client, open new connection  
+// TODO: If server already connected to client, open new connection  
 
+/**
+ * Generic peer for subket
+ * 
+ * @author Florent HAZARD
+ *
+ */
 public class SubketPeer implements Runnable {
 	
 	public static final short CLIENT	= 1;
 	public static final short SERVER	= 2;
 	
 	public static final short BUFFER_SIZE	= 1024;
-	public static final short defaultPort	= 2013;
+	public static final short defaultPort	= 2016;
 
 	public final static byte SIGNAL_OK	= 1;
 	public final static byte SIGNAL_NOT	= 0;
@@ -82,12 +88,12 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Constructor
 	 * 
-	 * @param appKey
-	 * @param subketHost
-	 * @param subketPort
-	 * @param isServer
-	 * @param respClass
-	 * @param respObject
+	 * @param appKey The application key
+	 * @param subketHost The hub host
+	 * @param subketPort The hub port
+	 * @param isServer True this peer is a server else a client
+	 * @param respClass The response callback class
+	 * @param respObject The response callback object
 	 */
 	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass, SubketResponse respObject) {
 		this.appKey		= appKey;
@@ -102,11 +108,11 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Constructor
 	 * 
-	 * @param appKey
-	 * @param subketHost
-	 * @param subketPort
-	 * @param isServer
-	 * @param respClass
+	 * @param appKey The application key
+	 * @param subketHost The hub host
+	 * @param subketPort The hub port
+	 * @param isServer True this peer is a server else a client
+	 * @param respClass The response callback class
 	 */
 	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass) {
 		this(appKey, subketHost, subketPort, isServer, respClass, null);
@@ -115,11 +121,11 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Constructor
 	 * 
-	 * @param appKey
-	 * @param subketHost
-	 * @param subketPort
-	 * @param isServer
-	 * @param respObject
+	 * @param appKey The application key
+	 * @param subketHost The hub host
+	 * @param subketPort The hub port
+	 * @param isServer True this peer is a server else a client
+	 * @param respObject The response callback object
 	 */
 	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, SubketResponse respObject) {
 		this(appKey, subketHost, subketPort, isServer, null, respObject);
@@ -169,8 +175,8 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Convert output stream
 	 * 
-	 * @param s
-	 * @return
+	 * @param s The output stream to convert
+	 * @return The converted output stream
 	 * @throws Exception
 	 */
 	public OutputStream convertOutputStream(OutputStream s) throws Exception {
@@ -180,8 +186,8 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Convert input stream
 	 * 
-	 * @param s
-	 * @return
+	 * @param s The input stream to convert
+	 * @return The converted input stream
 	 * @throws Exception
 	 */
 	public InputStream convertInputStream(InputStream s) throws Exception {
@@ -191,7 +197,7 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Set output stream
 	 * 
-	 * @param os
+	 * @param os The new output stream
 	 * @throws Exception
 	 */
 	public void setOutputStream(OutputStream os) throws Exception {
@@ -207,7 +213,7 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Send packet to the output stream with no process
 	 * 
-	 * @param packet
+	 * @param packet The packet to send
 	 * @throws Exception
 	 */
 	public synchronized void sendRaw(byte[] packet) throws Exception {
@@ -223,7 +229,7 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Send packet to the output stream prepended by length
 	 * 
-	 * @param packet
+	 * @param data The data to send
 	 * @throws Exception
 	 */
 	public synchronized void send(byte[] data) throws Exception {
@@ -233,7 +239,7 @@ public class SubketPeer implements Runnable {
 	
 	/**
 	 * Send Serializable object to the output stream
-	 * @param data
+	 * @param data The serializable object to send
 	 * @throws Exception
 	 */
 	public synchronized void send(Serializable data) throws Exception {
@@ -245,7 +251,7 @@ public class SubketPeer implements Runnable {
 	/**
 	 * Log this report
 	 * 
-	 * @param s
+	 * @param s The report string
 	 */
 	public static synchronized void log(String s) {
 		System.out.println("[Peer] "+s);

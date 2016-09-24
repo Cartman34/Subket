@@ -17,7 +17,7 @@ public class SubketObjectClient extends SubketPeer {
 
 	public static void main(String[] args) {
 		System.out.println("Running SubketObjectClient");
-		SubketPeer pair = new SubketObjectClient(1, "127.0.0.1", SubketPeer.defaultPort, false, SubketObjectCallback.class);
+		SubketPeer pair = new SubketObjectClient(2, "127.0.0.1", SubketPeer.defaultPort, false, SubketObjectCallback.class);
 		try {
 			new Thread(pair).start();
 		} catch (Exception e) {

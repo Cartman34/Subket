@@ -22,7 +22,7 @@ public class SubketObjectServer extends SubketPeer {
 
 	public static void main(String[] args) {
 		System.out.println("Running SubketObjectServer");
-		SubketPeer pair = new SubketObjectServer(1, "127.0.0.1", SubketPeer.defaultPort, true, SubketObjectCallback.class);
+		SubketPeer pair = new SubketObjectServer(2, "127.0.0.1", SubketPeer.defaultPort, true, SubketObjectCallback.class);
 		try {
 			new Thread(pair).start();
 			System.out.println("[Server] Pair Started");
