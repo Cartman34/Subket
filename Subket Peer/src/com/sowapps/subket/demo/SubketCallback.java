@@ -1,7 +1,13 @@
 package com.sowapps.subket.demo;
 
-import com.sowapps.subket.pair.SubketResponse;
+import com.sowapps.subket.peer.SubketResponse;
 
+/**
+ * Subket callback implementation for standard demo
+ * 
+ * @author Florent HAZARD
+ *
+ */
 public class SubketCallback extends SubketResponse {
 
 	@Override

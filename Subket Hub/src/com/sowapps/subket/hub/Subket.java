@@ -6,10 +6,24 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
+/**
+ * A hub to connect different peers
+ * 
+ * @author Florent HAZARD
+ *
+ */
 public class Subket {
 	
+	/**
+	 * Default port
+	 */
 	public static final int defaultPort = 2013;
-
+	
+	/**
+	 * Main to run hub
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Subket subket = new Subket(defaultPort);
 		try {
@@ -20,18 +34,39 @@ public class Subket {
 		}
 	}
 	
+	/**
+	 * Port
+	 */
 	private int port;
+	
+	/**
+	 * Listening socket
+	 */
 	private ServerSocket adminSocket;
+	
+	/**
+	 * Applications Mapping from key Integer to SubketApplication
+	 */
 	private static HashMap<Integer, SubketApplication> apps;
 	
 	public static final int CLIENT = 1;
 	public static final int SERVER = 2;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param port The port of the subket
+	 */
 	public Subket(int port) {
 		this.port = port;
 		apps = new HashMap<Integer, SubketApplication>();
 	}
 	
+	/**
+	 * Run the current subket
+	 * 
+	 * @throws Exception
+	 */
 	public void run() throws Exception {
 		if( adminSocket != null ) {
 			throw new Exception("Already running");

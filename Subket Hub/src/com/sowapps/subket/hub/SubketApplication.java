@@ -4,39 +4,46 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+/**
+ * Declare a specific application to the subket, each application has its own client and server peers.
+ * 
+ * @author Florent HAZARD
+ *
+ */
 public class SubketApplication {
-
+	
+	/**
+	 * List of waiting clients
+	 */
 	protected LinkedList<Socket> waitingClients;
+	
+	/**
+	 * List of waiting servers
+	 */
 	protected LinkedList<Socket> waitingServers;
+	
+	/**
+	 * List of current proxies
+	 */
 	protected ArrayList<SubketProxy> proxies;
 	
+	/**
+	 * Constructor
+	 */
 	public SubketApplication() {
 		waitingClients	 = new LinkedList<Socket>();
 		waitingServers	 = new LinkedList<Socket>();
 		proxies			 = new ArrayList<SubketProxy>();
 	}
 	
-	public void disconnect(SubketProxy proxy) {
-		if( !proxies.contains(proxy) ) {
-			return;// Avoid infinite loop
-		}
-		System.out.println("Disconnecting Proxy from Application");
-		proxies.remove(proxy);// Before closing proxy
-		proxy.close();//If closed, do nothing
-	}
-	
-	public boolean testSocket(Socket socket) throws Exception {
-		if( socket.isClosed() ) { return false; }
-		try {
-			socket.getInputStream().read();
-		} catch( Exception e ) {
-//			e.printStackTrace();
-			socket.close();
-			return false;
-		}
-		return true;
-	}
-	
+	/**
+	 * Connect socket to the application, client to server, server to client and if pear available, the socket waits for a new one.
+	 * It creates a new proxy to communicate between peers.
+	 * 
+	 * @param connecting
+	 * @param isServer
+	 * @throws Exception
+	 */
 	public void connect(Socket connecting, boolean isServer) throws Exception {
 		if( connecting.isClosed() || !testSocket(connecting) ) {
 			throw new Exception("Connecting is closed");
@@ -62,45 +69,56 @@ public class SubketApplication {
 		waitingConnecting.add(connecting);
 	}
 	
+	/**
+	 * Connect a client to the application
+	 * 
+	 * @param client
+	 * @throws Exception
+	 */
 	public void connectClient(Socket client) throws Exception {
 		connect(client, false);
-//		if( client.isClosed() || !testSocket(client) ) {
-//			throw new Exception("client closed");
-//		}
-//		// If one server found, we use it
-//		Socket server;
-//		while( (server = waitingServers.poll()) != null ) {
-//			if( testSocket(server) ) {
-//				System.out.println("[SubketApp] Connecting to an existing server");
-//				proxies.add(new SubketProxy(this, client, server));
-//				return;
-//			}
-//			System.out.println("[SubketApp] One available server is now disconnected");
-//		}
-//		// We used the waiting byte, so with signal NOT OK
-//		client.getOutputStream().write(SubketProxy.SIGNAL_NOT);
-//		// Adding this client to the waiting ones
-//		System.out.println("[SubketApp] Add to waiting clients");
-//		waitingClients.add(client);
 	}
 	
+	/**
+	 * Connect a server to the application
+	 * 
+	 * @param server
+	 * @throws Exception
+	 */
 	public void connectServer(Socket server) throws Exception {
 		connect(server, true);
-//		if( server.isClosed() ) {
-//			throw new Exception("server closed");
-//		}
-//		// If one client found, we use it
-//		Socket client;
-//		while( (client = waitingClients.poll()) != null ) {
-//			if( testSocket(client) ) {
-//				System.out.println("[SubketApp] Connecting to an existing client");
-//				proxies.add(new SubketProxy(this, client, server));
-//				return;
-//			}
-//			System.out.println("[SubketApp] One available client is now disconnected");
-//		}
-//		// Adding this server to the waiting ones
-//		System.out.println("[SubketApp] Add to waiting servers");
-//		waitingServers.add(server);
+	}
+	
+	/**
+	 * Disconnect the given proxy
+	 * 
+	 * @param proxy
+	 */
+	public void disconnect(SubketProxy proxy) {
+		if( !proxies.contains(proxy) ) {
+			return;// Avoid infinite loop
+		}
+		System.out.println("Disconnecting Proxy from Application");
+		proxies.remove(proxy);// Before closing proxy
+		proxy.close();//If closed, do nothing
+	}
+	
+	/**
+	 * Test if the given socket is available
+	 * 
+	 * @param socket
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean testSocket(Socket socket) throws Exception {
+		if( socket.isClosed() ) { return false; }
+		try {
+			socket.getInputStream().read();
+		} catch( Exception e ) {
+//			e.printStackTrace();
+			socket.close();
+			return false;
+		}
+		return true;
 	}
 }

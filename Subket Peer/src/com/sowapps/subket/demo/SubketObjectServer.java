@@ -1,10 +1,15 @@
 package com.sowapps.subket.demo;
 
-import com.sowapps.subket.pair.SubketPair;
-import com.sowapps.subket.pair.SubketResponse;
+import com.sowapps.subket.peer.SubketPeer;
+import com.sowapps.subket.peer.SubketResponse;
 
-// COULD NOT WORK DUE TO THE NON-GENERICITY OF run()
-public class SubketObjectServer extends SubketPair {
+/**
+ * Subket peer server implementation for object demo
+ * 
+ * @author Florent HAZARD
+ *
+ */
+public class SubketObjectServer extends SubketPeer {
 
 	public SubketObjectServer(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass) {
 		super(appKey, subketHost, subketPort, isServer, respClass);
@@ -17,14 +22,14 @@ public class SubketObjectServer extends SubketPair {
 
 	public static void main(String[] args) {
 		System.out.println("Running SubketObjectServer");
-		SubketPair pair = new SubketObjectServer(1, "127.0.0.1", SubketPair.defaultPort, true, SubketObjectCallback.class);
+		SubketPeer pair = new SubketObjectServer(1, "127.0.0.1", SubketPeer.defaultPort, true, SubketObjectCallback.class);
 		try {
 			new Thread(pair).start();
 			System.out.println("[Server] Pair Started");
-			TestObject data = new TestObject();
 			while( !pair.isConnected() ) {
 				Thread.sleep(100);
 			}
+			TestObject data = new TestObject();
 //			System.out.println("Sending some data");
 			pair.send(data);
 		} catch (Exception e) {

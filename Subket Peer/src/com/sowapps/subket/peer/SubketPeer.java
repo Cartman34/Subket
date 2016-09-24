@@ -1,4 +1,4 @@
-package com.sowapps.subket.pair;
+package com.sowapps.subket.peer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 
 // TODO: If server and connected to client, open new connection  
 
-public class SubketPair implements Runnable {
+public class SubketPeer implements Runnable {
 	
 	public static final short CLIENT	= 1;
 	public static final short SERVER	= 2;
@@ -21,91 +21,234 @@ public class SubketPair implements Runnable {
 
 	public final static byte SIGNAL_OK	= 1;
 	public final static byte SIGNAL_NOT	= 0;
-
+	
+	/**
+	 * The application key
+	 */
 	protected int appKey;
+	
+	/**
+	 * The hub host
+	 */
 	protected String subketHost;
+	
+	/**
+	 * The hub port
+	 */
 	protected short subketPort;
-	protected short pairType;
+	
+	/**
+	 * The hub peer type
+	 */
+	protected short peerType;
+	
+	/**
+	 * The active socket connection to hub
+	 */
 	protected Socket subket;
+	
+	/**
+	 * The input stream from hub
+	 */
 	protected InputStream inputStream;
+	
+	/**
+	 * The output stream to hub
+	 */
 	protected OutputStream outputStream;
-	protected Thread runningThread;
+	
+	/**
+	 * The response callback class
+	 */
 	protected Class<? extends SubketResponse> respClass;
+	
+	/**
+	 * The response callback object
+	 */
 	protected SubketResponse respObject;
+	
+	/**
+	 * Asynchrone state
+	 */
 	protected boolean asynchrone;
+	
+	/**
+	 * Connected state
+	 */
 	protected boolean connected = false;
 	
 //	public final static byte[] SIGNAL_OK = new byte[]{0,0,0,1};
-
-	public SubketPair(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass, SubketResponse respObject) {
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param appKey
+	 * @param subketHost
+	 * @param subketPort
+	 * @param isServer
+	 * @param respClass
+	 * @param respObject
+	 */
+	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass, SubketResponse respObject) {
 		this.appKey		= appKey;
 		this.subketHost	= subketHost;
 		this.subketPort	= subketPort;
-		this.pairType	= isServer ? SERVER : CLIENT;
+		this.peerType	= isServer ? SERVER : CLIENT;
 		this.respClass	= respClass;
 		this.respObject	= respObject;
 		setAsynchrone();
 	}
-	public SubketPair(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass) {
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param appKey
+	 * @param subketHost
+	 * @param subketPort
+	 * @param isServer
+	 * @param respClass
+	 */
+	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, Class<? extends SubketResponse> respClass) {
 		this(appKey, subketHost, subketPort, isServer, respClass, null);
 	}
-	public SubketPair(int appKey, String subketHost, short subketPort, boolean isServer, SubketResponse respObject) {
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param appKey
+	 * @param subketHost
+	 * @param subketPort
+	 * @param isServer
+	 * @param respObject
+	 */
+	public SubketPeer(int appKey, String subketHost, short subketPort, boolean isServer, SubketResponse respObject) {
 		this(appKey, subketHost, subketPort, isServer, null, respObject);
 	}
 	
+	/**
+	 * Set peer synchrone
+	 */
 	public void setSynchrone() {
 		this.asynchrone	= false;
 	}
+	
+	/**
+	 * Set peer asynchrone
+	 */
 	public void setAsynchrone() {
 		this.asynchrone	= true;
 	}
+	
+	/**
+	 * Is asynchrone ?
+	 * 
+	 * @return
+	 */
 	public boolean isAsynchrone() {
 		return this.asynchrone;
 	}
+	
+	/**
+	 * Is this peer running ?
+	 * 
+	 * @return
+	 */
 	public boolean isRunning() {
 		return outputStream != null;
 	}
+	
+	/**
+	 * Is this peer connected ?
+	 * 
+	 * @return
+	 */
 	public boolean isConnected() {
 		return connected;
 	}
 	
+	/**
+	 * Convert output stream
+	 * 
+	 * @param s
+	 * @return
+	 * @throws Exception
+	 */
 	public OutputStream convertOutputStream(OutputStream s) throws Exception {
 		return s;
 	}
+	
+	/**
+	 * Convert input stream
+	 * 
+	 * @param s
+	 * @return
+	 * @throws Exception
+	 */
 	public InputStream convertInputStream(InputStream s) throws Exception {
 		return s;
 	}
 	
+	/**
+	 * Set output stream
+	 * 
+	 * @param os
+	 * @throws Exception
+	 */
 	public void setOutputStream(OutputStream os) throws Exception {
 		if( !isRunning() ) {
-			throw new Exception("Pair is not running");
+			throw new Exception("Peer is not running");
 		}
 		if( os == null ) {
 			throw new Exception("Null value");
 		}
 		outputStream = os;
 	}
-
+	
+	/**
+	 * Send packet to the output stream with no process
+	 * 
+	 * @param packet
+	 * @throws Exception
+	 */
 	public synchronized void sendRaw(byte[] packet) throws Exception {
 		if( !isRunning() ) {
-			throw new Exception("Pair is not running");
+			throw new Exception("Peer is not running");
 		}
 		outputStream.write(packet);
 		outputStream.flush();
 //		outputStream.write(0);
 //		outputStream.flush();
 	}
+	
+	/**
+	 * Send packet to the output stream prepended by length
+	 * 
+	 * @param packet
+	 * @throws Exception
+	 */
 	public synchronized void send(byte[] data) throws Exception {
 		log("Sending "+data.length+" bytes (+ 4 bytes for length value).");
 		sendRaw(ByteBuffer.allocate(data.length+4).putInt(data.length).put(data).array());
 	}
+	
+	/**
+	 * Send Serializable object to the output stream
+	 * @param data
+	 * @throws Exception
+	 */
 	public synchronized void send(Serializable data) throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
 		new ObjectOutputStream(bos).writeObject(data);
 		send(bos.toByteArray());
 	}
+	
+	/**
+	 * Log this report
+	 * 
+	 * @param s
+	 */
 	public static synchronized void log(String s) {
-		System.out.println("[Pair] "+s);
+		System.out.println("[Peer] "+s);
 	}
 
 	@Override
@@ -121,7 +264,7 @@ public class SubketPair implements Runnable {
 			log("Running");
 			outputStream	= convertOutputStream(subket.getOutputStream());
 			// Send authentication to hub
-			sendRaw(ByteBuffer.allocate(5).putInt(appKey).put((byte) pairType).array());
+			sendRaw(ByteBuffer.allocate(5).putInt(appKey).put((byte) peerType).array());
 			
 			inputStream		= convertInputStream(subket.getInputStream());
 			
@@ -197,13 +340,16 @@ public class SubketPair implements Runnable {
 		    log("Connection closed");
 			
 		} catch (Exception e) {
-			System.out.println("Error running SubketPair listener");
+			System.out.println("Error running SubketPeer listener");
 			e.printStackTrace();
 		}
 		close();
-		log("Ending running SubketPair Thread");
+		log("Ending running SubketPeer Thread");
 	}
 	
+	/**
+	 * Close this proxy by closing the socket and resetting the output stream
+	 */
 	public synchronized void close() {
 		if( !subket.isClosed() ) {
 			try {

@@ -2,13 +2,19 @@ package com.sowapps.subket.demo;
 
 import java.util.Scanner;
 
-import com.sowapps.subket.pair.SubketPair;
+import com.sowapps.subket.peer.SubketPeer;
 
+/**
+ * Subket peer server implementation for standard demo
+ * 
+ * @author Florent HAZARD
+ *
+ */
 public class SubketServer {
-
+	
 	public static void main(String[] args) {
 		System.out.println("Running SubketServer");
-		SubketPair pair = new SubketPair(1, "127.0.0.1", SubketPair.defaultPort, true, SubketCallback.class);
+		SubketPeer pair = new SubketPeer(1, "127.0.0.1", SubketPeer.defaultPort, true, SubketCallback.class);
 		try {
 			new Thread(pair).start();
 			System.out.println("[Server] Pair Started");
