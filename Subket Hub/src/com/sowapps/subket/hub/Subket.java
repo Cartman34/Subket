@@ -25,7 +25,18 @@ public class Subket {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Subket subket = new Subket(defaultPort);
+		
+		int port = defaultPort;
+		try {
+			if( args.length > 0 ) {
+				port = Integer.parseInt(args[0]);
+			}
+		} catch( Exception e ) {
+			System.err.println("The first argument should be an integer, we got \""+args[0]+"\". So we are unable to start application.\n");
+			e.printStackTrace();
+			return;
+		}
+		Subket subket = new Subket(port);
 		try {
 			subket.run();
 		} catch (Exception e) {
@@ -82,7 +93,7 @@ public class Subket {
 		while(true) {
 		    Socket pairSocket = null;
 			try {
-				System.out.println("[Subket] Waiting for next Pair");
+				System.out.println("[Subket] Waiting for next Pair on port "+port);
 				pairSocket = adminSocket.accept();
 				System.out.println("[Subket] Accepted connection from "+pairSocket.getInetAddress());
 			    InputStream is = pairSocket.getInputStream();
